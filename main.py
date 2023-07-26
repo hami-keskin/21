@@ -47,24 +47,28 @@ def compare(user_score, computer_score):
         return "You lose!"
 
 
-def suggest_action(user_score, computer_card, remaining_cards, deck):  # Pass the deck variable
+def suggest_action(user_score, computer_card, deck):
     if user_score > 21:
         return "You should pass."
 
-    if user_score <= 11:
+    # Soft hand (contains an Ace)
+    if 11 in deck and user_score < 19:
         return "You should draw a card."
 
-    if computer_card == 11:
-        return "You should be cautious and consider passing."
-
-    if remaining_cards > 0:
-        high_card_ratio = count_high_cards(deck)  # Pass the entire deck
-        if high_card_ratio > 0.5:
-            return "You may consider drawing a card to increase your chances of a higher score."
+    # Hard hand (no Ace)
+    if user_score <= 11:
+        return "You should draw a card."
+    elif user_score >= 17:
+        return "You should pass."
+    elif 12 <= user_score <= 16:
+        # Dealer's face-up card
+        dealer_card = computer_card
+        if 2 <= dealer_card <= 6:
+            return "You should pass."
         else:
-            return "It's better to be cautious and pass."
+            return "You should draw a card."
     else:
-        return "There are no more cards in the deck. You should pass."
+        return "You should draw a card."
 
 
 def play_game():
@@ -84,7 +88,7 @@ def play_game():
 
     print(f" Your cards: {user_cards}, current score: {user_score}")
     print(f" Computer's first card: {computer_cards[0]}")
-    print(suggest_action(user_score, computer_cards[0], len(deck), deck))  # Pass the entire deck
+    print(suggest_action(user_score, computer_cards[0], deck))  # Pass the entire deck
 
     while not is_game_over:
         should_deal = input("Type 'y' to get another card, or 'n' to pass: ").lower()
@@ -93,7 +97,7 @@ def play_game():
             user_cards.append(deal_card(deck))
             user_score = calculate_score(user_cards)
             print(f" Your cards: {user_cards}, current score: {user_score}")
-            print(suggest_action(user_score, computer_cards[0], len(deck), deck))  # Pass the entire deck
+            print(suggest_action(user_score, computer_cards[0], deck))  # Pass the entire deck
             if user_score > 21:
                 is_game_over = True
         else:
