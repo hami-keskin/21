@@ -58,9 +58,9 @@ def count_high_cards(deck):
 def compare(user_score, computer_score):
     if user_score == computer_score:
         return "Draw"
-    elif computer_score == 0:
+    elif computer_score == 21:
         return "Loss"
-    elif user_score == 0:
+    elif user_score == 21:
         return "Win"
     elif user_score > 21:
         return "Loss"
