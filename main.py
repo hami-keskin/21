@@ -146,7 +146,8 @@ def play_game():
             else:
                 is_game_over = True
 
-        while computer_score < 21 and user_score <= 21:
+        # Only draw cards for the computer if its score is less than 21 and higher than the user's score
+        while computer_score < 17 and user_score <= 21:
             computer_cards.append(deal_card(deck, num_decks))
             computer_score = calculate_score(computer_cards)
 
