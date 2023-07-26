@@ -23,6 +23,13 @@ def calculate_score(cards):
     return sum(cards)
 
 
+def count_high_cards(deck):
+    high_cards = [10, 11]
+    remaining_cards = deck.count(high_cards[0]) + deck.count(high_cards[1])
+    total_cards = len(deck)
+    return remaining_cards / total_cards
+
+
 def compare(user_score, computer_score):
     if user_score == computer_score:
         return "It's a draw!"
@@ -40,14 +47,30 @@ def compare(user_score, computer_score):
         return "You lose!"
 
 
+def suggest_action(user_score, computer_card, remaining_cards):
+    if user_score > 21:
+        return "You should pass."
+
+    if user_score <= 11:
+        return "You should draw a card."
+
+    if computer_card == 11:
+        return "You should be cautious and consider passing."
+
+    high_card_ratio = remaining_cards / 52  # 4 decks * 13 cards = 52 total cards in the deck
+    if high_card_ratio > 0.5:
+        return "You may consider drawing a card to increase your chances of a higher score."
+    else:
+        return "It's better to be cautious and pass."
+
+
 def play_game():
-    num_decks = 4  # 4 desteyi temsil eden 208 kartlık bir destemiz var
+    num_decks = 4
     deck = create_deck(num_decks)
 
     user_cards = []
     computer_cards = []
     is_game_over = False
-    is_double_down = False
 
     for _ in range(2):
         user_cards.append(deal_card(deck))
@@ -56,24 +79,22 @@ def play_game():
     user_score = calculate_score(user_cards)
     computer_score = calculate_score(computer_cards)
 
+    print(f" Your cards: {user_cards}, current score: {user_score}")
+    print(f" Computer's first card: {computer_cards[0]}")
+    print(suggest_action(user_score, computer_cards[0], len(deck)))
+
     while not is_game_over:
-        print(f" Your cards: {user_cards}, current score: {user_score}")
-        print(f" Computer's first card: {computer_cards[0]}")
+        should_deal = input("Type 'y' to get another card, or 'n' to pass: ")
 
-        if user_score == 0 or computer_score == 0 or user_score > 21 or is_double_down:
-            is_game_over = True
-        else:
-            should_deal = input("Type 'y' to get another card, 'd' to double down, or 'n' to pass: ")
-
-            if should_deal == 'y':
-                user_cards.append(deal_card(deck))
-                user_score = calculate_score(user_cards)
-            elif should_deal == 'd':
-                user_cards.append(deal_card(deck))
-                user_score = calculate_score(user_cards)
-                is_double_down = True
-            else:
+        if should_deal == 'y':
+            user_cards.append(deal_card(deck))
+            user_score = calculate_score(user_cards)
+            print(f" Your cards: {user_cards}, current score: {user_score}")
+            print(suggest_action(user_score, computer_cards[0], len(deck)))
+            if user_score > 21:
                 is_game_over = True
+        else:
+            is_game_over = True
 
     while computer_score != 0 and computer_score < 17:
         computer_cards.append(deal_card(deck))
