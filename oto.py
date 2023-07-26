@@ -139,10 +139,9 @@ def play_game():
             print(suggest_action(user_score, computer_cards[0], deck))  # Pass the entire deck
 
             # Automatically decide based on suggestion
-            should_deal = suggest_action(user_score, computer_cards[0], deck)[0]  # Take the first character of the suggestion
-            print(f"Computer chooses: {should_deal}")
+            should_deal = suggest_action(user_score, computer_cards[0], deck)
 
-            if should_deal == 'D':
+            if should_deal == "DRAW":
                 user_cards.append(deal_card(deck, num_decks))
                 user_score = calculate_score(user_cards)
                 if user_score > 21:
