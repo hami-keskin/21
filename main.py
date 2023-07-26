@@ -27,7 +27,7 @@ def count_high_cards(deck):
     high_cards = [10, 11]
     remaining_cards = deck.count(high_cards[0]) + deck.count(high_cards[1])
     total_cards = len(deck)
-    return remaining_cards / total_cards
+    return remaining_cards / (total_cards / 52)  # Divide by total cards in a single deck
 
 
 def compare(user_score, computer_score):
@@ -47,7 +47,7 @@ def compare(user_score, computer_score):
         return "You lose!"
 
 
-def suggest_action(user_score, computer_card, remaining_cards):
+def suggest_action(user_score, computer_card, remaining_cards, deck):  # Pass the deck variable
     if user_score > 21:
         return "You should pass."
 
@@ -57,11 +57,14 @@ def suggest_action(user_score, computer_card, remaining_cards):
     if computer_card == 11:
         return "You should be cautious and consider passing."
 
-    high_card_ratio = remaining_cards / 52  # 4 decks * 13 cards = 52 total cards in the deck
-    if high_card_ratio > 0.5:
-        return "You may consider drawing a card to increase your chances of a higher score."
+    if remaining_cards > 0:
+        high_card_ratio = count_high_cards(deck)  # Pass the entire deck
+        if high_card_ratio > 0.5:
+            return "You may consider drawing a card to increase your chances of a higher score."
+        else:
+            return "It's better to be cautious and pass."
     else:
-        return "It's better to be cautious and pass."
+        return "There are no more cards in the deck. You should pass."
 
 
 def play_game():
@@ -81,16 +84,16 @@ def play_game():
 
     print(f" Your cards: {user_cards}, current score: {user_score}")
     print(f" Computer's first card: {computer_cards[0]}")
-    print(suggest_action(user_score, computer_cards[0], len(deck)))
+    print(suggest_action(user_score, computer_cards[0], len(deck), deck))  # Pass the entire deck
 
     while not is_game_over:
-        should_deal = input("Type 'y' to get another card, or 'n' to pass: ")
+        should_deal = input("Type 'y' to get another card, or 'n' to pass: ").lower()
 
         if should_deal == 'y':
             user_cards.append(deal_card(deck))
             user_score = calculate_score(user_cards)
             print(f" Your cards: {user_cards}, current score: {user_score}")
-            print(suggest_action(user_score, computer_cards[0], len(deck)))
+            print(suggest_action(user_score, computer_cards[0], len(deck), deck))  # Pass the entire deck
             if user_score > 21:
                 is_game_over = True
         else:
