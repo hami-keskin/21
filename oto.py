@@ -116,7 +116,7 @@ def play_game():
     deck = create_deck(num_decks)
 
     user = Player()
-    total_games = 100
+    total_games = 10000
     wins = 0
     losses = 0
     draws = 0
