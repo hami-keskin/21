@@ -56,20 +56,36 @@ def count_high_cards(deck):
 
 
 def compare(user_score, computer_score):
-    if user_score == computer_score:
-        return "Draw"
-    elif computer_score == 21:
+    # This function compares the scores of the user and the computer and returns the result of the game.
+    # The function takes two integers as parameters, representing the scores of the user and the computer.
+    # The function returns a string, indicating whether the user wins, loses or draws.
+
+    # If either score is 0, it means blackjack
+    if user_score == 0 or computer_score == 0:
+        if user_score == computer_score:
+            return "Draw"
+        elif user_score == 0:
+            return "Win"
+        else:
+            return "Loss"
+
+    # If either score is over 21, it means bust
+    if user_score > 21 or computer_score > 21:
+        if user_score > computer_score:
+            return "Loss"
+        elif user_score < computer_score:
+            return "Win"
+        else:
+            return "Draw"
+
+    # If neither score is blackjack or bust, compare them normally
+    if user_score > computer_score:
+        return "Win"
+    elif user_score < computer_score:
         return "Loss"
-    elif user_score == 21:
-        return "Win"
-    elif user_score > 21:
-        return "Loss"
-    elif computer_score > 21:
-        return "Win"
-    elif user_score > computer_score:
-        return "Win"
     else:
-        return "Loss"
+        return "Draw"
+
 
 
 def suggest_action(user_score, computer_card, deck):
