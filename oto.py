@@ -89,26 +89,26 @@ def compare(user_score, computer_score):
 
 def suggest_action(user_score, computer_card, deck):
     if user_score > 21:
-        return "You should pass."
+        return "PASS"
 
     # Soft hand (contains an Ace)
     if 11 in deck and user_score < 19:
-        return "You should draw a card."
+        return "DRAW"
 
     # Hard hand (no Ace)
     if user_score <= 11:
-        return "You should draw a card."
+        return "DRAW"
     elif user_score >= 17:
-        return "You should pass."
+        return "PASS"
     elif 12 <= user_score <= 16:
         # Dealer's face-up card
         dealer_card = computer_card
         if 2 <= dealer_card <= 6:
-            return "You should pass."
+            return "PASS"
         else:
-            return "You should draw a card."
+            return "DRAW"
     else:
-        return "You should draw a card."
+        return "DRAW"
 
 
 def play_game():
@@ -138,9 +138,11 @@ def play_game():
             print(f" Computer's first card: {computer_cards[0]}")
             print(suggest_action(user_score, computer_cards[0], deck))  # Pass the entire deck
 
-            should_deal = input("Type 'y' to get another card, or 'n' to pass: ").lower()
+            # Automatically decide based on suggestion
+            should_deal = suggest_action(user_score, computer_cards[0], deck)[0]  # Take the first character of the suggestion
+            print(f"Computer chooses: {should_deal}")
 
-            if should_deal == 'y':
+            if should_deal == 'D':
                 user_cards.append(deal_card(deck, num_decks))
                 user_score = calculate_score(user_cards)
                 if user_score > 21:
