@@ -87,7 +87,6 @@ def compare(user_score, computer_score):
         return "Draw"
 
 
-
 def suggest_action(user_score, computer_card, deck):
     if user_score > 21:
         return "You should pass."
@@ -147,7 +146,7 @@ def play_game():
             else:
                 is_game_over = True
 
-        while computer_score != 0 and computer_score < 17:
+        while computer_score < 21 and user_score <= 21:
             computer_cards.append(deal_card(deck, num_decks))
             computer_score = calculate_score(computer_cards)
 
