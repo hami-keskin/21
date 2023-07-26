@@ -71,9 +71,9 @@ def compare(user_score, computer_score):
 
     # If either score is over 21, it means bust
     if user_score > 21 or computer_score > 21:
-        if user_score > computer_score:
+        if user_score > 21:
             return "Loss"
-        elif user_score < computer_score:
+        elif computer_score > 21:
             return "Win"
         else:
             return "Draw"
