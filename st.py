@@ -1,3 +1,4 @@
+# Define a strategy function that recommends actions based on player's score and computer's card
 def strategy(player_score, computer_card):
     if player_score == 9 and 2 <= computer_card <= 6:
         return "DOUBLE"
@@ -15,10 +16,11 @@ def strategy(player_score, computer_card):
         return None
 
 
+# Define a function that suggests an action for the player's hand and computer's card
 def suggest_action(player_hand, computer_card, deck):
     player_score = sum(player_hand)
 
-    # Öncelikle, oyuncunun kart toplamı 21'i geçmişse "PASS" önerilir.
+    # If the player's hand total has exceeded 21, recommend "PASS".
     if player_score > 21:
         return "PASS"
 
@@ -26,11 +28,11 @@ def suggest_action(player_hand, computer_card, deck):
     if action is not None:
         return action
 
-    # Yumuşak el (As içeren el)
+    # Soft hand (contains an Ace)
     if player_score < 19 and any(card == 11 for card in player_hand):
         return 'DRAW'
 
-    # Sert el (As içermeyen el)
+    # Hard hand
     if player_score <= 11:
         return 'DRAW'
     else:
