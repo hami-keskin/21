@@ -14,7 +14,6 @@ def strategy(player_score, computer_card):
     else:
         return None
 
-
 def suggest_action(player_hand, computer_card, deck):
     player_score = sum(player_hand)
 
@@ -30,7 +29,7 @@ def suggest_action(player_hand, computer_card, deck):
     if player_score < 19 and any(card == 11 for card in player_hand):
         return 'DRAW'
 
-    # Sert el
+    # Sert el (As içermeyen el)
     if player_score <= 11:
         return 'DRAW'
     else:
