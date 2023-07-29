@@ -1,4 +1,3 @@
-import random
 def suggest_action(player_hand, computer_card, deck):
     player_score = sum(player_hand)
 
@@ -15,45 +14,66 @@ def suggest_action(player_hand, computer_card, deck):
         return "DRAW"
     elif player_score >= 17:
         return "PASS"
+    elif player_score == 9 or player_score == 10:
+        dealer_card = computer_card
+        if 2 <= dealer_card <= 9:
+            return "DOUBLE"
+        else:
+            return "DRAW"
     elif 12 <= player_score <= 16:
         # Bilgisayarın açık kartı
         dealer_card = computer_card
-        if 2 <= dealer_card <= 6:
-            return "PASS"
-        else:
+        if dealer_card == 4 or dealer_card == 5 or dealer_card == 6:
             return "DRAW"
+        else:
+            return "PASS"
     else:
         return "DRAW"
-def simulate_games(num_games):
-    num_correct_moves = 0
+
+
+import random
+
+def simulate_game(strategy_func, num_games=10000):
+    wins = 0
+    losses = 0
+    draws = 0
 
     for _ in range(num_games):
-        player_hand = []
-        computer_card = random.randint(2, 11)
-        deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
+        # Yapay bir deste oluştur
+        deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4
 
-        # İlk iki kartı dağıt
-        player_hand.append(random.choice(deck))
-        player_hand.append(random.choice(deck))
+        # Oyuncunun başlangıç elini ve bilgisayarın açık kartını belirle
+        player_hand = random.sample(deck, 2)
+        computer_card = random.choice(deck)
 
         while True:
-            action = suggest_action(player_hand, computer_card, deck)
+            action = strategy_func(player_hand, computer_card, deck)
             if action == "DRAW":
-                player_hand.append(random.choice(deck))
-            elif action == "PASS":
+                drawn_card = random.choice(deck)
+                player_hand.append(drawn_card)
+                deck.remove(drawn_card)
+            elif action == "DOUBLE":
+                drawn_card = random.choice(deck)
+                player_hand.append(drawn_card)
+                deck.remove(drawn_card)
+                break
+            else:
                 break
 
-            player_score = sum(player_hand)
-            if player_score > 21:
-                break
+        player_score = sum(player_hand)
+        if player_score > 21:
+            losses += 1
+        elif player_score == 21:
+            wins += 1
+        else:
+            draws += 1
 
-        if player_score <= 21:
-            num_correct_moves += 1
+    return wins, losses, draws
 
-    return num_correct_moves / num_games
+if __name__ == "__main__":
+    wins, losses, draws = simulate_game(suggest_action)
+    total_games = wins + losses + draws
 
-# 1000 oyunu simüle et ve başarı oranını hesapla
-num_games = 1000
-success_rate = simulate_games(num_games)
-
-print(f"Stratejinin başarı oranı: {success_rate:.2f}")
+    print(f"Başarı Oranı: {wins / total_games:.2%}")
+    print(f"Kayıp Oranı: {losses / total_games:.2%}")
+    print(f"Beraberlik Oranı: {draws / total_games:.2%}")

@@ -14,12 +14,18 @@ def suggest_action(player_hand, computer_card, deck):
         return "DRAW"
     elif player_score >= 17:
         return "PASS"
+    elif player_score == 9 or player_score == 10:
+        dealer_card = computer_card
+        if 2 <= dealer_card <= 9:
+            return "DOUBLE"
+        else:
+            return "DRAW"
     elif 12 <= player_score <= 16:
         # Bilgisayarın açık kartı
         dealer_card = computer_card
-        if 2 <= dealer_card <= 6:
-            return "PASS"
-        else:
+        if dealer_card == 4 or dealer_card == 5 or dealer_card == 6:
             return "DRAW"
+        else:
+            return "PASS"
     else:
         return "DRAW"
