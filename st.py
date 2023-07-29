@@ -14,6 +14,7 @@ def strategy(player_score, computer_card):
     else:
         return None
 
+
 def suggest_action(player_hand, computer_card, deck):
     player_score = sum(player_hand)
 

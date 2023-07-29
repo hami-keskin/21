@@ -39,6 +39,7 @@ def suggest_action(player_hand, computer_card, deck):
 
 import random
 
+
 def simulate_games(num_games):
     wins = 0
     total_games = num_games
@@ -74,6 +75,7 @@ def simulate_games(num_games):
 
     success_rate = wins / total_games
     return success_rate
+
 
 # Başarı oranını 100,000 oyun için simüle et
 success_rate = simulate_games(100000)
