@@ -58,7 +58,9 @@ def suggest_action(player_hand, computer_card, deck):
     else:
         return "DRAW"
 
+
 import random
+
 
 def simulate_blackjack_game(strategy_func):
     # Yeni oyun başlatma
@@ -99,6 +101,7 @@ def calculate_success_rate(strategy_func, num_games=100000):
 
     success_rate = wins / num_games
     return success_rate
+
 
 # Mevcut strateji ile başarı oranını hesapla
 success_rate = calculate_success_rate(suggest_action)
