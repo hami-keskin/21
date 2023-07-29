@@ -42,6 +42,12 @@ def suggest_action(player_hand, computer_card, deck):
         return "DRAW"
     elif player_score >= 17:
         return "PASS"
+    elif player_score == 9 or player_score == 10:
+        dealer_card = computer_card
+        if 2 <= dealer_card <= 9:
+            return "DOUBLE"
+        else:
+            return "DRAW"
     elif 12 <= player_score <= 16:
         # Bilgisayarın açık kartı
         dealer_card = computer_card
@@ -51,7 +57,6 @@ def suggest_action(player_hand, computer_card, deck):
             return "PASS"
     else:
         return "DRAW"
-
 
 import random
 
@@ -84,7 +89,8 @@ def simulate_blackjack_game(strategy_func):
     else:
         return "LOSE"
 
-def calculate_success_rate(strategy_func, num_games=10000):
+
+def calculate_success_rate(strategy_func, num_games=100000):
     wins = 0
     for _ in range(num_games):
         result = simulate_blackjack_game(strategy_func)
@@ -94,6 +100,6 @@ def calculate_success_rate(strategy_func, num_games=10000):
     success_rate = wins / num_games
     return success_rate
 
-# Strateji fonksiyonunu test etmek için başarı oranını hesapla
+# Mevcut strateji ile başarı oranını hesapla
 success_rate = calculate_success_rate(suggest_action)
-print(f"Başarı Oranı: {success_rate}")
+print(f"Mevcut strateji başarı oranı: {success_rate}")
