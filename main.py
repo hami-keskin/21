@@ -1,3 +1,20 @@
+def strategy(player_score, computer_card):
+    if player_score == 9 and 2 <= computer_card <= 6:
+        return "DOUBLE"
+    elif player_score == 10 and 2 <= computer_card <= 9:
+        return "DOUBLE"
+    elif player_score == 11 and 2 <= computer_card <= 10:
+        return "DOUBLE"
+    elif player_score == 12 and 4 <= computer_card <= 6:
+        return "DRAW"
+    elif player_score in [13, 14, 15, 16] and 2 <= computer_card <= 6:
+        return "DRAW"
+    elif player_score >= 17:
+        return "PASS"
+    else:
+        return None
+
+
 def suggest_action(player_hand, computer_card, deck):
     player_score = sum(player_hand)
 
@@ -5,104 +22,59 @@ def suggest_action(player_hand, computer_card, deck):
     if player_score > 21:
         return "PASS"
 
-    # Strateji tablosu tanımlama
-    strategy_table = {
-        (9, 2): "DOUBLE",
-        (9, 3): "DOUBLE",
-        (9, 4): "DOUBLE",
-        (9, 5): "DOUBLE",
-        (9, 6): "DOUBLE",
-        (10, 2): "DOUBLE",
-        (10, 3): "DOUBLE",
-        (10, 4): "DOUBLE",
-        (10, 5): "DOUBLE",
-        (10, 6): "DOUBLE",
-        (11, 2): "DOUBLE",
-        (11, 3): "DOUBLE",
-        (11, 4): "DOUBLE",
-        (11, 5): "DOUBLE",
-        (11, 6): "DOUBLE",
-        (17, 2): "PASS",
-        (17, 3): "PASS",
-        (17, 4): "PASS",
-        (17, 5): "PASS",
-        (17, 6): "PASS",
-    }
-
-    # Oyuncunun eli ile bilgisayar kartını birleştirerek tablodan stratejiyi al
-    if (player_score, computer_card) in strategy_table:
-        return strategy_table[(player_score, computer_card)]
+    action = strategy(player_score, computer_card)
+    if action is not None:
+        return action
 
     # Yumuşak el (As içeren el)
-    if 11 in player_hand and player_score < 19:
-        return "DRAW"
+    if player_score < 19 and any(card == 11 for card in player_hand):
+        return 'DRAW'
 
-    # Sert el (As içermeyen el)
+    # Sert el
     if player_score <= 11:
-        return "DRAW"
-    elif player_score >= 17:
-        return "PASS"
-    elif player_score == 9 or player_score == 10:
-        dealer_card = computer_card
-        if 2 <= dealer_card <= 9:
-            return "DOUBLE"
-        else:
-            return "DRAW"
-    elif 12 <= player_score <= 16:
-        # Bilgisayarın açık kartı
-        dealer_card = computer_card
-        if dealer_card == 4 or dealer_card == 5 or dealer_card == 6:
-            return "DRAW"
-        else:
-            return "PASS"
+        return 'DRAW'
     else:
-        return "DRAW"
+        return 'PASS'
 
 
 import random
 
-
-def simulate_blackjack_game(strategy_func):
-    # Yeni oyun başlatma
-    deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4  # 4 deste kart
-    random.shuffle(deck)
-
-    player_hand = [deck.pop(), deck.pop()]  # İki kart çek
-    computer_card = deck.pop()
-
-    while True:
-        action = strategy_func(player_hand, computer_card, deck)
-        if action == "PASS":
-            break
-        elif action == "DRAW":
-            player_hand.append(deck.pop())
-        elif action == "DOUBLE":
-            player_hand.append(deck.pop())
-            break
-
-    player_score = sum(player_hand)
-
-    if player_score > 21:
-        return "LOSE"
-    elif player_score == 21:
-        return "WIN"
-    elif player_score > computer_card:
-        return "WIN"
-    else:
-        return "LOSE"
-
-
-def calculate_success_rate(strategy_func, num_games=100000):
+def simulate_games(num_games):
     wins = 0
+    total_games = num_games
+
     for _ in range(num_games):
-        result = simulate_blackjack_game(strategy_func)
-        if result == "WIN":
+        # Oyuncunun eli ve bilgisayarın açık kartını rastgele oluştur
+        player_hand = [random.randint(2, 11), random.randint(2, 11)]
+        computer_card = random.randint(2, 11)
+
+        # Stratejiye göre oyuncunun hamlesini al
+        action = suggest_action(player_hand, computer_card, [])
+
+        # Oyuncunun elini tamamla
+        while action == "DRAW":
+            new_card = random.randint(2, 11)
+            player_hand.append(new_card)
+            player_score = sum(player_hand)
+
+            # Yumuşak el (As içeren el) için As'ın değerini ayarla
+            if 11 in player_hand and player_score > 21:
+                player_hand[player_hand.index(11)] = 1
+                player_score = sum(player_hand)
+
+            if player_score > 21:
+                break
+
+            action = suggest_action(player_hand, computer_card, [])
+
+        # Son durumda oyunu değerlendir
+        player_score = sum(player_hand)
+        if player_score <= 21 and (player_score > sum([computer_card]) or sum([computer_card]) > 21):
             wins += 1
 
-    success_rate = wins / num_games
+    success_rate = wins / total_games
     return success_rate
 
-
-# Mevcut strateji ile başarı oranını hesapla
-success_rate = calculate_success_rate(suggest_action)
-print(f"Mevcut strateji başarı oranı: {success_rate}")
+# Başarı oranını 100,000 oyun için simüle et
+success_rate = simulate_games(100000)
+print("Başarı Oranı:", success_rate)
