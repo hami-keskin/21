@@ -5,6 +5,34 @@ def suggest_action(player_hand, computer_card, deck):
     if player_score > 21:
         return "PASS"
 
+    # Strateji tablosu tanımlama
+    strategy_table = {
+        (9, 2): "DOUBLE",
+        (9, 3): "DOUBLE",
+        (9, 4): "DOUBLE",
+        (9, 5): "DOUBLE",
+        (9, 6): "DOUBLE",
+        (10, 2): "DOUBLE",
+        (10, 3): "DOUBLE",
+        (10, 4): "DOUBLE",
+        (10, 5): "DOUBLE",
+        (10, 6): "DOUBLE",
+        (11, 2): "DOUBLE",
+        (11, 3): "DOUBLE",
+        (11, 4): "DOUBLE",
+        (11, 5): "DOUBLE",
+        (11, 6): "DOUBLE",
+        (17, 2): "PASS",
+        (17, 3): "PASS",
+        (17, 4): "PASS",
+        (17, 5): "PASS",
+        (17, 6): "PASS",
+    }
+
+    # Oyuncunun eli ile bilgisayar kartını birleştirerek tablodan stratejiyi al
+    if (player_score, computer_card) in strategy_table:
+        return strategy_table[(player_score, computer_card)]
+
     # Yumuşak el (As içeren el)
     if 11 in player_hand and player_score < 19:
         return "DRAW"
@@ -14,12 +42,6 @@ def suggest_action(player_hand, computer_card, deck):
         return "DRAW"
     elif player_score >= 17:
         return "PASS"
-    elif player_score == 9 or player_score == 10:
-        dealer_card = computer_card
-        if 2 <= dealer_card <= 9:
-            return "DOUBLE"
-        else:
-            return "DRAW"
     elif 12 <= player_score <= 16:
         # Bilgisayarın açık kartı
         dealer_card = computer_card
@@ -33,47 +55,45 @@ def suggest_action(player_hand, computer_card, deck):
 
 import random
 
-def simulate_game(strategy_func, num_games=10000):
+def simulate_blackjack_game(strategy_func):
+    # Yeni oyun başlatma
+    deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4  # 4 deste kart
+    random.shuffle(deck)
+
+    player_hand = [deck.pop(), deck.pop()]  # İki kart çek
+    computer_card = deck.pop()
+
+    while True:
+        action = strategy_func(player_hand, computer_card, deck)
+        if action == "PASS":
+            break
+        elif action == "DRAW":
+            player_hand.append(deck.pop())
+        elif action == "DOUBLE":
+            player_hand.append(deck.pop())
+            break
+
+    player_score = sum(player_hand)
+
+    if player_score > 21:
+        return "LOSE"
+    elif player_score == 21:
+        return "WIN"
+    elif player_score > computer_card:
+        return "WIN"
+    else:
+        return "LOSE"
+
+def calculate_success_rate(strategy_func, num_games=10000):
     wins = 0
-    losses = 0
-    draws = 0
-
     for _ in range(num_games):
-        # Yapay bir deste oluştur
-        deck = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11] * 4
-
-        # Oyuncunun başlangıç elini ve bilgisayarın açık kartını belirle
-        player_hand = random.sample(deck, 2)
-        computer_card = random.choice(deck)
-
-        while True:
-            action = strategy_func(player_hand, computer_card, deck)
-            if action == "DRAW":
-                drawn_card = random.choice(deck)
-                player_hand.append(drawn_card)
-                deck.remove(drawn_card)
-            elif action == "DOUBLE":
-                drawn_card = random.choice(deck)
-                player_hand.append(drawn_card)
-                deck.remove(drawn_card)
-                break
-            else:
-                break
-
-        player_score = sum(player_hand)
-        if player_score > 21:
-            losses += 1
-        elif player_score == 21:
+        result = simulate_blackjack_game(strategy_func)
+        if result == "WIN":
             wins += 1
-        else:
-            draws += 1
 
-    return wins, losses, draws
+    success_rate = wins / num_games
+    return success_rate
 
-if __name__ == "__main__":
-    wins, losses, draws = simulate_game(suggest_action)
-    total_games = wins + losses + draws
-
-    print(f"Başarı Oranı: {wins / total_games:.2%}")
-    print(f"Kayıp Oranı: {losses / total_games:.2%}")
-    print(f"Beraberlik Oranı: {draws / total_games:.2%}")
+# Strateji fonksiyonunu test etmek için başarı oranını hesapla
+success_rate = calculate_success_rate(suggest_action)
+print(f"Başarı Oranı: {success_rate}")
